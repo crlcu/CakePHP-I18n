@@ -8,7 +8,6 @@
 <?php echo $this->Form->create('Translation', array('role' => 'form', 'data-pjax' => '#page #content'));?>
     <?php echo $this->Form->input('msgid', array('type' => 'hidden'));?>
     <?php echo $this->Form->input('parent_id', array('type' => 'hidden', 'value' => $translation['Translation']['id']));?>
-    <?php echo $this->Form->input('user_id', array('type' => 'hidden', 'value' => $user->id()));?>
     
     <?php echo $this->Form->input('msgstr', array('escape' => false, 'div' => array('class' => 'form-group'), 'label' => __('Translation'), 'class' => 'form-control', 'placeholder' => __('Translation')));?>
     <?php echo $this->Form->input('language_id', array('escape' => false, 'div' => array('class' => 'form-group'), 'label' => __('Language'), 'class' => 'form-control', 'options' => $languages, 'placeholder' => __('Language')));?>
