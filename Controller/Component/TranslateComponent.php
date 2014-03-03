@@ -30,36 +30,6 @@ class TranslateComponent extends Component {
                 break;
         }
     }
-    
-	/**
-	* Translate a piece of text with the Google Translate API
-	* @return String
-	* @param $text String
-	* @param $from String[optional] Original language of $text. An empty String will let google decide the language of origin
-	* @param $to String[optional] Language to translate $text to
-	*/
-	public function translate($text, $from = '', $to = 'eng') {
-		$url = 'http://mymemory.translated.net/api/get?q='.rawurlencode($text).'&langpair='.rawurlencode($from.'|'.$to);
-        
-		$response = file_get_contents(
-			$url,
-			null,
-			stream_context_create(
-				array(
-					'http' => array(
-						'method' => "GET",
-						'header' => "Referer: http://".$_SERVER['HTTP_HOST']."/\r\n"
-					)
-				)
-			)
-		);
-		
-		if (preg_match("/{\"translatedText\":\"([^\"]+)\"/i", $response, $matches)) {
-			return self::_unescapeUTF8EscapeSeq($matches[1]);
-		}
-		
-		return false;
-	}
 	
 	public function export() {
 		$filename = 'tmp' . gmdate('YmdHis');

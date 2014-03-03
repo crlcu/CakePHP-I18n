@@ -2,17 +2,7 @@
 class TranslationsController extends I18nAppController {
 	public $components = array('I18n.Translate');
 	
-    public function index() {		
-        $this->paginate = array(
-            'conditions' => array(
-                $this->Translation->search( $this->Authentication->User->search('Translation') ),
-                'Translation.parent_id' => null
-            ),
-            'limit' => I18N_TRANSLATIONS_INDEX_LIMIT,
-            'recursive' => 3
-        );
-        
-		$this->request->data = $this->Authentication->User->search('Translation');
+    public function index() {
 		$this->set('translations', $this->paginate());
 	}
     
@@ -22,7 +12,7 @@ class TranslationsController extends I18nAppController {
 				$this->Translate->export();
 				$this->Session->setFlash(__('Sentence successfully added!'), 'success');
 				
-				$this->redirect(array('action' => 'index'));
+				return $this->redirect(array('action' => 'index'));
 			}
 		}
 	}
@@ -34,8 +24,9 @@ class TranslationsController extends I18nAppController {
 		if ( $this->request->is('put') ) {
 			if ( $this->Translation->save( $this->data ) ) {
 				$this->Translate->export();
+				
 				$this->Session->setFlash(__('Translation successfully saved!'), 'success');
-				$this->redirect(array('action' => 'index'));
+				return $this->redirect(array('action' => 'index'));
 			}
 		} else {
             $this->data = $translation;
@@ -59,7 +50,7 @@ class TranslationsController extends I18nAppController {
 				$this->Translate->export();
 				$this->Session->setFlash(__('Translation successfully saved!'), 'success');
 				
-				$this->redirect(array('action' => 'index'));
+				return $this->redirect(array('action' => 'index'));
 			}
 		} else {
 			$this->data = $translation;
@@ -67,34 +58,6 @@ class TranslationsController extends I18nAppController {
 		
 		$this->set(compact('languages', 'translation'));
 	}
-	
-	public function _translate() {
-		$sentences = $this->Translation->findAllByLanguage('eng');
-		
-		foreach ($sentences as $sentence) {
-			foreach ($this->Translate as $language => $country) {
-				$translated = $this->Translation->find('all', array('conditions' => array(
-                    'Translation.language' => $language,
-                    'Translation.msgid' => $sentence['Translation']['msgid']
-                )));
-				
-				if (count($translated) == 0) {
-				    $this->Translation->create();
-                    
-                    $this->request->data['Translation']['parent_id']  = $sentence['Translation']['id']; 
-					$this->request->data['Translation']['msgstr'] = $this->Translate->translate($sentence['Translation']['msgid'], 'en', substr($language, 0, 2)); 
-					$this->request->data['Translation']['msgid']  = $sentence['Translation']['msgid']; 
-					$this->request->data['Translation']['language'] = $language; 
-					$this->request->data['Translation']['status'] = 'm';
-					
-					$this->Translation->save($this->request->data); 
-				} 
-			}
-		}
-        
-        $this->Session->setFlash(__('Automate translation successfully done!'), 'success');
-        $this->redirect(array('action' => 'index'));
-    }
     
     protected function _delete( $id = null ) {
         $translation = $this->Translation->findById( $id );
